@@ -6,6 +6,8 @@ mod sensor;
 use sensor::SensorCo2;
 use tokio::time::sleep;
 
+const LIMIT: i32 = 100;
+
 #[tokio::main]
 async fn main() {
     let chat_id: i64 = env::var("CHAT_ID").unwrap().parse::<i64>().unwrap();
@@ -20,7 +22,7 @@ async fn main() {
     loop {
         match device.get_co2_value() {
             Ok(e) => {
-                if (e - last_level).abs() > 200 {
+                if (e - last_level).abs() > LIMIT {
                     let message = format!("Co2 level {}", e);
                     bot.send_message(chat, message).await.unwrap();
                     last_level = e;
